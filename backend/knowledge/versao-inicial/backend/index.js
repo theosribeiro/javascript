@@ -1,5 +1,8 @@
 const app = require("express")() //app representa a instancia do express
 const consign = require('consign') //ajudar na gerencia das dependencias
+const db = require('./config/db')
+
+app.db = db // passo as configuracoes do knex, ja configurado para o DB do app
 
 consign()
     .then('./config/middlewares.js') //vai ser carregado esse arquivo pelo consign
