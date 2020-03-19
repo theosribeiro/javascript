@@ -59,6 +59,15 @@ module.exports = app => { //fazer essa funcao retornar para fora do modulo um ob
             .catch(err => res.status(500).send(err))
     }
 
+    //metodo para listar o user do sistema pelo ID
+    const getById = (req, res) => {
+        app.db('users')
+            .select('id', 'name', 'email', 'admin')
+            .where({id: req.params.id})
+            .first()
+            .then(user => res.json(user))
+            .catch(err => res.status(500).send(err))
+    }
 
-    return { save, get } //retorna o metodo save e get
+    return { save, get, getById } //retorna o metodo save e get
 }

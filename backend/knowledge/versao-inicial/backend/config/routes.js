@@ -6,4 +6,5 @@ module.exports = app => { //definir as rotas da aplicacao
     
     app.route('/users/:id') // o consign vai ajudar aqui a atualizar o usuario a partir dessa rota
         .put(app.api.user.save)
+        .get(app.api.user.getById)
 }
