@@ -97,5 +97,24 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
-    return{save,remove,get,getById}
+    //transformar o array de categoria em arvore
+    //funcao arrow vai receber um array de categorias e uma arvore
+    const toTree = (categories, tree) =>{
+        //gerar arvore inicial, quando tree estiver vazia
+        if(!tree) tree = categories.filter(c => !c.parentId)
+        tree = tree.map(parentNode => {
+            const isChild = node => node.parentId == parentNode.id
+            parentNode.children = toTree(categories,categories.filter(isChild))
+            return parentNode
+        })
+        return tree
+    }
+
+    const getTree = (req,res) => {
+        app.db('categories')
+            .then(categories => res.json(toTree(categories)))
+            .catch(err => res.status(500).send(err))
+    }
+
+    return{save,remove,get,getById,getTree}
 }
