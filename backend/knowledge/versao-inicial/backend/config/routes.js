@@ -1,4 +1,9 @@
 module.exports = app => { //definir as rotas da aplicacao
+    //autenticacao - URLs publicas, qualquer pessoa pode acessar sem validacao do token
+    app.post('/signup', app.api.user.save)
+    app.post('/signin', app.api.auth.signin)
+    app.post('/validateToken', app.api.auth.validateToken)
+    
     //vai salvar atraves de um post
     app.route('/users')
         .post(app.api.user.save) // o consign vai ajudar aqui a salvar o usuario a partir dessa rota
