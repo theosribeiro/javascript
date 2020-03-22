@@ -5,6 +5,7 @@ const db = require('./config/db')
 app.db = db // passo as configuracoes do knex, ja configurado para o DB do app
 
 consign()
+    .include('./config/passport.js') //carregar para autenticar
     .then('./config/middlewares.js') //vai ser carregado esse arquivo pelo consign
     .then('./api/validation.js')//tem q carregar o validation antes da api do user
     .then('./api') // vai ser carregado todos os arquivos da pasta api pelo consign
