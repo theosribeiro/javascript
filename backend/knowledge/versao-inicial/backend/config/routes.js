@@ -47,4 +47,8 @@ module.exports = app => { //definir as rotas da aplicacao
     app.route('/categories/:id/articles')
         .all(app.config.passport.authenticate()) //so vai chamar os metodos post e get ou qlq outro depois de autenticar
         .get(app.api.article.getByCategory)
+
+    app.route('/stats')
+        .get(app.config.passport.authenticate())
+        .get(app.api.stat.get)
 }

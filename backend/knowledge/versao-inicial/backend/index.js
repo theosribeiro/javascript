@@ -1,8 +1,12 @@
 const app = require("express")() //app representa a instancia do express
 const consign = require('consign') //ajudar na gerencia das dependencias
 const db = require('./config/db')
+const mongoose = require('mongoose')
+require('./config/mongodb')
+
 
 app.db = db // passo as configuracoes do knex, ja configurado para o DB do app
+app.mongoose = mongoose
 
 consign()
     .include('./config/passport.js') //carregar para autenticar
