@@ -15,6 +15,11 @@ module.exports = app => { //fazer essa funcao retornar para fora do modulo um ob
         const user = {...req.body} //... é um operador spread para espalhar todos os atributos de body
         if (req.params.id) user.id = req.params.id //atualizar o user existente
         //res.send('user save')
+        
+        //antes de cadastrar, verificar se quem ta cadastrando o usuario eh admin, se não for, o usuario cadastrado nao podera ser admin
+        if(!req.originalUrl.startsWith('/users')) user.admin = false //so pode inserir usuario se tiver na url /users
+        if(!req.user || !req.user.admin) user.admin = false
+        
         //tratamento de dados
         try{
             existsOrError(user.name, 'Nome não informado')
