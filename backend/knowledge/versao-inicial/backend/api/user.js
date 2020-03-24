@@ -41,6 +41,7 @@ module.exports = app => { //fazer essa funcao retornar para fora do modulo um ob
             app.db('users')
                 .update(user)
                 .where({ id: user.id })
+                .whereNull('deletedAt') //atualiza somente se o campo esta null
                 .then(_ => res.status(204).send()) //deu certo, atualizou
                 .catch(err => res.status(500).send(err))
         }else{ //se n, insira
@@ -51,10 +52,11 @@ module.exports = app => { //fazer essa funcao retornar para fora do modulo um ob
         }
     }
 
-    //metodo para listar todos os users do sistema
+    //metodo para listar todos os users do sistema, somente aqueles que não foram "excluidos" (deletedAt vazio)
     const get = (req,res) => {
         app.db('users')
             .select('id', 'name', 'email', 'admin')
+            .whereNull('deletedAt')
             .then(users => res.json(users))
             .catch(err => res.status(500).send(err))
     }
@@ -64,10 +66,30 @@ module.exports = app => { //fazer essa funcao retornar para fora do modulo um ob
         app.db('users')
             .select('id', 'name', 'email', 'admin')
             .where({id: req.params.id})
+            .whereNull('deletedAt')
             .first()
             .then(user => res.json(user))
             .catch(err => res.status(500).send(err))
     }
 
-    return { save, get, getById } //retorna o metodo save e get
+    //remover usuario apenas se o mesmo nao tem artigos associados a ele,
+    //se tiver, tem q desassociar e depois excluir(exclusão somente informando a data q foi exluido)
+    const remove = async (req,res) =>{
+        try{
+            const articles = await app.db('articles')
+                .where({userId: req.params.id})
+            notExistsOrError(articles, "O Usuário possui artigos.")
+
+            const rowsUpdated = await app.db('users')
+                .update({deletedAt: new Date()}) //atualizar o campo com a data atual
+                .where({id: req.params.id})
+            existsOrError(rowsUpdated, "O usuário não foi encontrado.")
+
+            res.status(204).send()
+        }catch(msg){
+            res.status(400).send(msg)
+        }
+    }
+
+    return { save, get, getById, remove } //retorna o metodo save e get
 }
